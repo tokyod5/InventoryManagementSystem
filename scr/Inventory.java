@@ -6,6 +6,7 @@ public class Inventory implements InventoryManager {
     public ArrayList<BaseProduct> items = new ArrayList<>();
     public String dataFile = "inventory_data.dat";
     public String historyFile = "history.log";
+    public String TransHistoryFile = "TransHistory.log";
 
     // Check if a product ID already exists
     public boolean productIdExists(String productId) {
@@ -86,6 +87,17 @@ public class Inventory implements InventoryManager {
         }
     }
 
+    @Override
+    public void logSale(String sale) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TransHistoryFile, true))) {
+            String timestamp = LocalDate.now().toString();
+            writer.write("[" + timestamp + "] " + sale);
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("\nError: Unable to write to Transaction history.");
+        }
+    }
+
     // View the history log
     @Override
     public void viewHistory() {
@@ -100,6 +112,47 @@ public class Inventory implements InventoryManager {
         }
     }
 
+    @Override
+    public void viewSaleHistory() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(TransHistoryFile))) {
+            System.out.println("\n=== Inventory History Log ===\n");
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("\nError: Unable to read history log. File may not exist.");
+        }
+    }
+
+
+    @Override
+    public void makeSale(String productId, int quantity) {
+        try {
+        // Iterate through the list of items to find the product
+            for (BaseProduct product : items) {
+                if (product.id.equals(productId)) {
+                // Check if the product has enough quantity for the sale
+                    if (product.quantity >= quantity) {
+                    // Deduct the sold quantity
+                        product.quantity -= quantity;
+                        System.out.println("\nSale successfully made. Current quantity of product is: " + product.quantity);
+                    } else {
+                        System.out.println("\nError: Insufficient quantity. Only " + product.quantity + " units available.");
+                    }
+                    String sale = "Sale of product ID "+productId+" made. New Quantity: "+quantity;
+                    logSale(sale);
+                    return; // Exit the method after handling the sale
+            }
+        }
+        // If no matching product is found
+        System.out.println("\nError: Product ID does not exist.");
+    } catch (Exception e) {
+        System.out.println("\nError: An unexpected error occurred during the sale operation.");
+    }
+}
+
+    
     // Generate a summary report of the inventory
     @Override
     public void generateReport() {
