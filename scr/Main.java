@@ -19,7 +19,9 @@ public class Main {
             System.out.println("5. View History");
             System.out.println("6. Remove Product");
             System.out.println("7. Update Product");
-            System.out.println("8. Exit");
+            System.out.println("8. Make a Sale");
+            System.out.println("9. Show Sale History");
+            System.out.println("10. Exit");
             System.out.print("\nChoose an option: ");
 
             try {
@@ -145,11 +147,27 @@ public class Main {
                                 System.out.println("\n** Error: Invalid choice. Returning to Main Menu. **\n");
                         }
                         break;
+                    case 9:
+                        // Exit
+                        System.out.println("\nViewing Sale History:\n");
+                        inventory.viewSaleHistory();
+                        break;
 
-                    case 8:
+                    case 10:
                         // Exit
                         System.out.println("\nGoodbye!\n");
                         return;
+
+                    case 8:
+                        // Show All Items
+                        System.out.println("\nMaking Sale:\n");
+                        System.out.print("Enter Product ID: ");
+                        String productId = scanner.nextLine();
+                        System.out.print("\nEnter Quantity sold: ");
+                        int quantity = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+                        inventory.makeSale(productId, quantity);
+                        break;
 
                     default:
                         System.out.println("\n** Error: Invalid choice. Please try again. **\n");
